@@ -84,6 +84,13 @@ const App = () => {
                 setTimeout(() => {
                     setNotiMessage("");
                 }, 5000);
+            })
+            .catch(err => {
+                setIsSuccess(false);
+                setNotiMessage(err.response.data.error);
+                setTimeout(() => {
+                    setNotiMessage("");
+                }, 5000);
             });
     };
 
@@ -91,8 +98,8 @@ const App = () => {
         if (
             window.confirm(`Delete ${persons.find((p) => p.id === id).name}?`)
         ) {
-            remove(id).then((returnedData) =>
-                setPersons(persons.filter((p) => p.id !== returnedData.id))
+            remove(id).then(() =>
+                setPersons(persons.filter((p) => p.id !== id))
             );
         } else {
             return;

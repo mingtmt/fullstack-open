@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const url = process.env.MONGODB_URI;
+const phoneRegex = /^[0-9]{2,3}-[0-9]+$/;
 
 mongoose.set("strictQuery", false);
 mongoose
@@ -13,8 +14,24 @@ mongoose
     });
 
 const personSchema = new mongoose.Schema({
-    name: String,
-    number: String,
+    name: {
+        type: String,
+        minLength: 3,
+        require: true,
+        unique: true,
+    }, 
+    number: {
+        type: String,
+        minLength: 8,
+        require: true,
+        validate: {
+            validator: function (value) {
+                if (!phoneRegex.test(value)) {
+                    return false;
+                }
+            }
+        },
+    }
 });
 
 personSchema.set("toJSON", {
