@@ -99,6 +99,42 @@ test('a new blog without url is not added', async () => {
   assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
 })
 
+describe('updation of a blog', () => {
+  test('a blog can be updated', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToUpdate = blogsAtStart[0]
+
+    const updatedData = {
+      ...blogToUpdate,
+      likes: blogToUpdate.likes + 1,
+    }
+
+    const response = await api.put(`/api/blogs/${blogToUpdate.id}`).send(updatedData).expect(200)
+
+    assert.strictEqual(response.body.likes, blogToUpdate.likes + 1)
+  })
+
+  test('updating a blog with invalid id returns 400', async () => {
+    const invalidId = '5a3d5da59070081a82a3445'
+
+    const updatedBlog = {
+      likes: 10,
+    }
+
+    await api.put(`/api/blogs/${invalidId}`).send(updatedBlog).expect(400)
+  })
+})
+
+test('updating a non-existing blog returns 404', async () => {
+  const validNonExistingId = await helper.nonExistingId()
+
+  const updatedBlog = {
+    likes: 10,
+  }
+
+  await api.put(`/api/blogs/${validNonExistingId}`).send(updatedBlog).expect(404)
+})
+
 describe('deletion of a blog', () => {
   test('succeeds with status code 204 if id is valid', async () => {
     const blogsAtStart = await helper.blogsInDb()
